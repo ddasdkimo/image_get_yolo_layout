@@ -6,11 +6,13 @@ from tqdm import tqdm
 mApiService = ApiService()
 mImageFile = ImageFile()
 yolotype = ["with_mask","without_mask","mask_weared_incorrect","person","hand","foot","head"]
+inSaveYoloType = [4,5,6]# 要更新的資料
 yolotypeStr = str(yolotype).replace("'",'"')
-imgpath = './data/img/c2_/'
-imgpathData = './data/img/c2_image/'
-labelpagth = './data/img/c2_label/'
-findMinSize = 0.1#
+dirname = 'yolo_data/'
+imgpath = './data/'+dirname+'images/'
+imgpathData = './data/'+dirname+'image/'
+labelpagth = './data/'+dirname+'label/'
+findMinSize = 0.00#
 mImageFile.mkdir(labelpagth)
 mImageFile.mkdir(imgpathData)
 filelist = mImageFile.getImageFile(imgpath)
@@ -33,14 +35,18 @@ for i in tqdm(range(len(filelist))):
         continue
     # 找出夠大的圖片
     checkSize = False
+    writeStr = ""
     for item in yololist:
         if item == "":
             continue
         size = float(item.split(" ")[3])*float(item.split(" ")[4])
         if size > findMinSize:
             checkSize = True
-            break
+            
+        # 找出需要存擋的資料
+        if int(item.split(" ")[0]) in inSaveYoloType:
+            writeStr = item + '\n'
     # 若成功轉換資料，將圖片與layout複製一份
-    if checkSize:
-        mImageFile.writeYoloFile(yoloStr,labelpagth+filename.replace(".jpg",".txt"))
+    if checkSize and writeStr != "":
+        mImageFile.writeYoloFile(writeStr,labelpagth+filename.replace(".jpg",".txt").replace(".png",".txt"))
         mImageFile.copyFile(imgpath+filename,imgpathData+filename)

@@ -19,7 +19,9 @@ class ImageFile:
             os.mkdir(path)
     
     def writeYoloFile(self,yoloData,pat):
-        with open(pat, "w") as text_file:
+        if os.path.isfile(pat):
+            yoloData = "\n" + yoloData
+        with open(pat, "a") as text_file:
             text_file.write(yoloData)
     def copyFile(self,fpath,path):
         shutil.copyfile(fpath, path)
